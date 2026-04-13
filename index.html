@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>شارك تطبيق نبض التفوق</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0c10 0%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* خلفية متحركة */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 210, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* البطاقة الرئيسية */
+        .share-card {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 30px 24px 40px;
+            text-align: center;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 210, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .share-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* شعار التطبيق */
+        .app-logo {
+            margin-bottom: 20px;
+        }
+
+        .logo-circle {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00d2ff, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .logo-circle i {
+            font-size: 40px;
+            color: white;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 30px rgba(0, 210, 255, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(0, 210, 255, 0.6);
+            }
+        }
+
+        /* عنوان التطبيق */
+        .app-title {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d2ff, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .app-subtitle {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        /* صورة الباركود */
+        .barcode-section {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 32px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+        }
+
+        .barcode-title {
+            color: #00d2ff;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .barcode-title i {
+            font-size: 18px;
+        }
+
+        .barcode-container {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .barcode-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+        }
+
+        .barcode-note {
+            color: #6b7280;
+            font-size: 11px;
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        /* أزرار المشاركة */
+        .share-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .share-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 60px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .share-native {
+            background: linear-gradient(135deg, #00d2ff, #8b5cf6);
+            color: white;
+        }
+
+        .share-whatsapp {
+            background: #25D366;
+            color: white;
+        }
+
+        .share-native:hover, .share-whatsapp:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        /* رسالة توست */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* نافذة المشاركة المنبثقة (للمتصفحات التي لا تدعم Web Share) */
+        .fallback-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(12px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .fallback-dialog.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .dialog-content {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 32px;
+            padding: 28px;
+            width: 85%;
+            max-width: 320px;
+            text-align: center;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .fallback-dialog.active .dialog-content {
+            transform: scale(1);
+        }
+
+        .dialog-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00d2ff, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .dialog-icon i {
+            font-size: 28px;
+            color: white;
+        }
+
+        .dialog-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .dialog-message {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .dialog-link {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 20px;
+            word-break: break-all;
+            font-size: 11px;
+            color: #00d2ff;
+            direction: ltr;
+        }
+
+        .dialog-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .dialog-copy-btn, .dialog-close-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .dialog-copy-btn {
+            background: linear-gradient(135deg, #00d2ff, #8b5cf6);
+            color: white;
+        }
+
+        .dialog-close-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #9ca3af;
+        }
+
+        /* تنسيق الخطأ في تحميل الصورة */
+        .barcode-error {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .barcode-error i {
+            font-size: 48px;
+            color: #ef4444;
+            margin-bottom: 10px;
+        }
+        .barcode-error p {
+            color: #6b7280;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="share-card">
+            <!-- صورة الباركود -->
+            <div class="barcode-section">
+                <div class="barcode-title">
+                    <i class="fas fa-qrcode"></i>
+                    <span>امسح الباركود لتحميل التطبيق</span>
+                </div>
+                <div class="barcode-container">
+                    <img id="barcodeImage" class="barcode-img" src="qrcode.png" alt="باركود تحميل التطبيق" style="width: 100%; max-width: 280px;">
+                </div>
+                <div class="barcode-note">
+                    <i class="fas fa-mobile-alt"></i> استخدم كاميرا هاتفك لمسح الباركود
+                </div>
+            </div>
+            
+            <!-- أزرار المشاركة -->
+            <div class="share-buttons">
+                <button class="share-btn share-native" onclick="handleShare()">
+                    <i class="fas fa-share-alt"></i>
+                    <span>مشاركة</span>
+                </button>
+                <button class="share-btn share-whatsapp" onclick="shareToWhatsApp()">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>واتساب</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- رسالة منبثقة -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg"></span>
+    </div>
+    
+    <!-- نافذة المشاركة البديلة -->
+    <div id="fallbackDialog" class="fallback-dialog">
+        <div class="dialog-content">
+            <div class="dialog-icon">
+                <i class="fas fa-share-alt"></i>
+            </div>
+            <div class="dialog-title">شارك التطبيق</div>
+            <div class="dialog-message">
+                قم بنسخ الرابط ومشاركته مع أصدقائك
+            </div>
+            <div class="dialog-link" id="dialogLink">https://www.appmarket24.com/app3709635-h4w6ex</div>
+            <div class="dialog-buttons">
+                <button class="dialog-copy-btn" onclick="copyFromDialog()">
+                    <i class="fas fa-copy"></i> نسخ الرابط
+                </button>
+                <button class="dialog-close-btn" onclick="closeDialog()">
+                    إغلاق
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // رابط التحميل
+        const APP_URL = "https://www.appmarket24.com/app3709635-h4w6ex";
+        const SHARE_TEXT = "🌟 قم بتحميل تطبيق نبض التفوق التعليمي 🌟\n\n📚 تطبيق شامل للملازم والاختبارات\n✓ عدادات تنازلية للامتحانات\n✓ نصائح دراسية وخطط يومية\n✓ أكثر من 5000 مستخدم يومي!\n\nرابط التحميل:\n" + APP_URL;
+        const SHARE_TITLE = "نبض التفوق - التطبيق التعليمي الأول";
+        
+        // عرض رسالة
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const icon = toast.querySelector('i');
+            
+            toastMsg.textContent = message;
+            
+            if (isError) {
+                icon.className = 'fas fa-exclamation-circle';
+                toast.style.background = 'rgba(239, 68, 68, 0.95)';
+            } else {
+                icon.className = 'fas fa-check-circle';
+                toast.style.background = 'rgba(16, 185, 129, 0.95)';
+            }
+            
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    icon.className = 'fas fa-check-circle';
+                    toast.style.background = 'rgba(30, 41, 59, 0.95)';
+                }, 300);
+            }, 2500);
+        }
+        
+        // نسخ الرابط
+        function copyToClipboard() {
+            navigator.clipboard.writeText(APP_URL).then(() => {
+                showToast('✅ تم نسخ رابط التحميل بنجاح');
+            }).catch(() => {
+                showToast('❌ فشل نسخ الرابط', true);
+            });
+        }
+        
+        // المشاركة عبر واتساب
+        function shareToWhatsApp() {
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(SHARE_TEXT)}`;
+            window.open(whatsappUrl, '_blank');
+            showToast('📱 جاري فتح واتساب');
+        }
+        
+        // فتح نافذة المشاركة البديلة
+        let fallbackDialog = document.getElementById('fallbackDialog');
+        
+        function openDialog() {
+            fallbackDialog.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeDialog() {
+            fallbackDialog.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function copyFromDialog() {
+            navigator.clipboard.writeText(APP_URL).then(() => {
+                showToast('✅ تم نسخ رابط التحميل بنجاح');
+                closeDialog();
+            }).catch(() => {
+                showToast('❌ فشل نسخ الرابط', true);
+            });
+        }
+        
+        // دالة المشاركة الرئيسية
+        function handleShare() {
+            if (navigator.share) {
+                navigator.share({
+                    title: SHARE_TITLE,
+                    text: SHARE_TEXT,
+                    url: APP_URL
+                }).then(() => {
+                    showToast('✨ شكراً لمشاركتك التطبيق!');
+                }).catch((err) => {
+                    if (err.name !== 'AbortError') {
+                        console.error('خطأ في المشاركة:', err);
+                        openDialog();
+                    }
+                });
+            } else {
+                openDialog();
+            }
+        }
+        
+        // إغلاق النافذة عند الضغط على الخلفية
+        fallbackDialog.addEventListener('click', function(e) {
+            if (e.target === fallbackDialog) {
+                closeDialog();
+            }
+        });
+        
+        // منع إغلاق النافذة عند الضغط على المحتوى
+        document.querySelector('.dialog-content')?.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        // تحديث رابط النافذة
+        document.getElementById('dialogLink').textContent = APP_URL;
+        
+        // التحقق من وجود صورة الباركود ومعالجة الأخطاء
+        const barcodeImg = document.getElementById('barcodeImage');
+        if (barcodeImg) {
+            barcodeImg.onerror = function() {
+                // إذا فشل تحميل الصورة، عرض رسالة خطأ
+                const container = document.querySelector('.barcode-container');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="barcode-error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>تعذر تحميل صورة الباركود</p>
+                            <p style="font-size: 10px; margin-top: 8px;">يرجى التأكد من وجود ملف test.png في نفس المجلد</p>
+                        </div>
+                    `;
+                }
+                showToast('⚠️ تعذر تحميل صورة الباركود', true);
+            };
+        }
+        
+        // إضافة تأثيرات حركية إضافية
+        document.addEventListener('DOMContentLoaded', function() {
+            // تأثير ظهور البطاقة
+            const card = document.querySelector('.share-card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>
